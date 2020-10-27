@@ -1,0 +1,110 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname rrrr) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor mixed-fraction #f #t none #f () #t)))
+;; ******************************************
+;;   Robert (Robbie) Knowles (20878339)
+;;   CS 135 Fall 2020
+;;   Midterm-1, Problem 7
+;; ******************************************
+
+;; ** Test Cases **
+
+;; Empty List Test Cases
+(define test1 empty)
+(define solt1 empty)
+
+;; No A's
+(define test2 "hi")
+(define solt2 "hi")
+
+(define test3 "hey")
+(define solt3 "hey")
+
+;; One A
+(define test4 "A men welked up to me")
+(define solt4 "Arrrr men welked up to me")
+
+(define test5 "a men welked up to me")
+(define solt5 "arrrr men welked up to me")
+
+;; Mixed Strings
+
+(define test6 "123abcA")
+(define solt6 "123arrrrbcArrrr")
+
+(define test7 "Its 5:am")
+(define solt7 "Its 5:arrrrm")
+
+(define test8 "a vs A")
+(define solt8 "arrrr vs Arrrr")
+
+(define test9 "avsA")
+(define solt9 "arrrrvsArrrr")
+
+(define test10 "aa.AA")
+(define solt10 "arrrrarrrr.ArrrrArrrr")
+
+
+
+
+;;
+;;   Problem 7
+;;
+
+;; (string->pirate str) Produces a new string with
+;;   all the a's replaced by "arrrr" and all the
+;;   A's with "Arrrr"
+
+;; Examples:
+(check-expect (string->pirate "na") "narrrr")
+(check-expect (string->pirate "Waterloo") "Warrrrterloo")
+(check-expect (string->pirate "Aardvark") "Arrrrarrrrrdvarrrrrk")
+
+;; string->pirate Str -> Str
+(define (string->pirate str)
+  (cond [(empty? str)                     empty]
+        [else  (list->string
+               (list->pirate (string->list str)))]))
+
+;; ** Helper function **
+
+        
+;; (list->pirate loc) Produces a new list of chars from
+;;   a list of chars (loc) with a's replaced by "arrrr" and all the
+;;   A's with "Arrrr"
+;; Examples:
+   
+(check-expect (list->pirate (string->list "na")) (string->list
+                                                   "narrrr"))
+(check-expect (list->pirate (string->list "Waterloo")) (string->list
+                                                   "Warrrrterloo"))
+(check-expect (list->pirate (string->list "Aardvark")) (string->list
+                                             "Arrrrarrrrrdvarrrrrk"))
+;; string->pirate (listof Char) -> (listof Char)
+(define (list->pirate loc)
+  (cond [(empty? loc) empty]
+        [(char=? (first loc) #\a)
+              (cons #\a (cons #\r (cons #\r (cons #\r
+              (cons #\r (list->pirate (rest loc)))))))]
+        [(char=? (first loc) #\A)
+              (cons #\A (cons #\r (cons #\r (cons #\r
+              (cons #\r (list->pirate (rest loc)))))))]
+        [else (cons (first loc) (list->pirate (rest loc)))]))
+
+;; Empty List Test
+(check-expect (string->pirate test1) solt1)
+
+;; No A's
+(check-expect (string->pirate test2) solt2)
+(check-expect (string->pirate test3) solt3)
+
+;; One A
+(check-expect (string->pirate test4) solt4)
+(check-expect (string->pirate test5) solt5)
+
+;; Mixed Strings
+(check-expect (string->pirate test6) solt6)
+(check-expect (string->pirate test7) solt7)
+(check-expect (string->pirate test8) solt8)
+(check-expect (string->pirate test9) solt9)
+(check-expect (string->pirate test10) solt10)
