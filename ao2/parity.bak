@@ -1,0 +1,34 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname parity) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor mixed-fraction #f #t none #f () #t)))
+;; ******************************************
+;;   Robert (Robbie) Knowles (20878339)
+;;   CS 135 Fall 2020
+;;   Assigment 02, Problem 5
+;; ******************************************
+
+
+
+
+
+;;***** Helper Functions *****
+
+
+;; (numones bstring) Produces the number of 1s that
+;;   can be found in the string bstring 
+;; Example:
+(check-expect (numones (string->list "")) 0)
+(check-expect (numones (string->list "Hello")) 0)
+(check-expect (numones (string->list "123451")) 2)
+(check-expect (numones (string->list "00001")) 1)
+(check-expect (numones (string->list "101011")) 4)
+(check-expect (numones (string->list "000")) 0)
+
+;; numones: (listof Char) -> Num
+(define (numones bstring)
+  (cond [(empty? bstring)        0]
+        [(char=? (first bstring) #\1)
+                                 (+ 1 (numones (rest bstring)))]
+        [else                    (numones (rest bstring))]))
+
+                        

@@ -1,0 +1,19 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-reader.ss" "lang")((modname sudoku) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor mixed-fraction #f #t none #f () #t)))
+;; ******************************************
+;;   Robert (Robbie) Knowles (20878339)
+;;   CS 135 Fall 2020
+;;   Assigment 02, Problem 6
+;; ******************************************
+
+;; Constants
+
+(define test1 (cons 1 (cons 2 (cons 3 (cons 4 (cons 5
+              (cons 9 (cons 8 (cons 7 (cons 6 empty))))))))))
+
+;; (sudoku-valid? lon) Checks to see if a 
+;;   list of numbers (lon) contains the set
+;;   of numbers 1-9 inclusive
+;; Examples:
+(check-expect (sudoku-valid test 1) true)
