@@ -1,0 +1,46 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-abbr-reader.ss" "lang")((modname html) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+;; ******************************************
+;;   Robert (Robbie) Knowles (20878339)
+;;   CS 135 Fall 2020
+;;   Assigment 06, Problem 2(A-C)
+;; ******************************************
+
+;; ==================================
+;; struct and data definitions For Q2
+;; =================================
+
+;; An HTML-Item (HI) is one of
+;; * Str
+;; * Tag
+
+;; A Tag is (cons Sym (listof HI))
+
+
+;; =================================
+;; constants used in Q2 examples
+;; =================================
+
+
+(define just-text "Hello, world!")
+(define short-example '(p (h1 "Heading") "Text"))
+(define html-example '(html (head (title "CS135"))
+                            (body (h1 "Welcome")
+                                  "More text..."))
+
+  
+;; =================================
+;;
+;; Question 1A
+;;
+;; =================================
+
+(define just-text "Hello, world!")
+(define short-example '(p (h1 "Heading") "Text"))
+(define html-example '(html (head (title "CS135"))
+                            (body (h1 "Welcome")
+                                  "More text...")))
+
+
+
