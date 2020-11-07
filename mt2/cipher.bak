@@ -1,0 +1,100 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-abbr-reader.ss" "lang")((modname cipher) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+;; ******************************************
+;;   Robert (Robbie) Knowles (20878339)
+;;   CS 135 Fall 2020
+;;   Midterm 02, Problem 5
+;; ******************************************
+
+
+;; ==================================
+;; struct and data definitions For Q5
+;; =================================
+
+
+;; A Substitution Cipher (SCipher) is a (listof (list Char Char))
+;; Requires: The first Char in each pair (the key) is unique
+
+
+;; =================================
+;; Testing Suite 5
+;; =================================
+
+(define vowel-shift '((#\a #\e) (#\e #\i) (#\i #\o)
+                      (#\o #\u) (#\u #\y) (#\y #\a)))
+
+
+;; =================================
+;;
+;; Question 5
+;;
+;; =================================
+
+
+
+;; (subsitute mess ciph) Consumes a Str (mess) and a SCipher 
+;;   (ciph), and produces a new string where each character is
+;;   replaced by the cipher
+;; Examples:
+
+(check-expect (substitute "I, plain text!9" vowel-shift)
+                          "I, ploen tixt!9")
+
+;; subsitute: Str SCipher -> Str
+(define (substitute mess ciph)
+  (cond [(empty? mess)                  ""]
+        [else
+              (string-append (replace-val (first (string->list mess))
+                                          ciph)
+                             (substitue (list->string (rest
+                                        (string->list mess)))
+                                        ciph))]))
+
+
+;; ===  Helper Functions  ===
+
+
+;; (replace-val cha ciph) Consumes a Char (cha) and a SCipher 
+;;   (ciph), and if the char is in the ciph it will replace it
+;;   with the corrispodning value
+;; Examples:
+
+(check-expect (replace-val #\a1 '((#\a1 #\b1) (#\a #\b))) #\b1)
+(check-expect (replace-val #\a2 '((#\a1 #\b1) (#\a #\b))) #\a2)
+
+
+;; replace-val: Char SCipher -> Char
+(define (replace-val cha ciph))
+  (cond [(empty? ciph)                  cha]
+        [(char=? (first (first ciph))
+                 cha)
+                      (second (first ciph))]
+        [else (replace-val cha (rest ciph))]
+
+;; Empty Tests
+(check-expect (hamming-distance (testa-l1 test1)
+                                (testa-l2 test1)) (testa-a test1))
+
+;; General Tests
+(check-expect (hamming-distance (testa-l1 test2)
+                                (testa-l2 test2)) (testa-a test2))
+(check-expect (hamming-distance (testa-l1 test3)
+                                (testa-l2 test3)) (testa-a test3))
+(check-expect (hamming-distance (testa-l1 test4)
+                                (testa-l2 test4)) (testa-a test4))
+(check-expect (hamming-distance (testa-l1 test5)
+                                (testa-l2 test5)) (testa-a test5))
+(check-expect (hamming-distance (testa-l1 test6)
+                                (testa-l2 test6)) (testa-a test6))
+(check-expect (hamming-distance (testa-l1 test7)
+                                (testa-l2 test7)) (testa-a test7))
+(check-expect (hamming-distance (testa-l1 test8)
+                                (testa-l2 test8)) (testa-a test8))
+(check-expect (hamming-distance (testa-l1 test9)
+                                (testa-l2 test9)) (testa-a test9))
+(check-expect (hamming-distance (testa-l1 test10)
+                                (testa-l2 test10)) (testa-a test10))
+(check-expect (hamming-distance (testa-l1 test11)
+                                (testa-l2 test11)) (testa-a test11))
+
