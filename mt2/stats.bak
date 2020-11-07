@@ -1,0 +1,88 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-beginner-abbr-reader.ss" "lang")((modname stats) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+;; ******************************************
+;;   Robert (Robbie) Knowles (20878339)
+;;   CS 135 Fall 2020
+;;   Midterm 02, Problem 6(A-D)
+;; ******************************************
+
+
+;; ==================================
+;; struct and data definitions For Q6
+;; =================================
+
+
+;; A Resource is (anyof 'fire 'wood 'water)
+
+(define-struct card (type power))
+;; A Card is a (make-card Resource Nat)
+
+;; An Outcome is (anyof 'player-1 'player-2 'tie-game)
+
+
+;; =================================
+;; Testing Suite 6
+;; =================================
+
+
+;; ======= General Tests ==========
+(define testcards
+  (list (make-card 'fire 10)
+        (make-card 'wood 23)
+        (make-card 'water 3)
+        (make-card 'fire 20)))
+
+(define testcards1
+  (list (make-card 'fire 10)))
+
+(define testcards2
+  (list (make-card 'fire 10)
+        (make-card 'water 23)))
+
+(define testcards3
+  (list (make-card 'fire 4)
+        (make-card 'fire 23)))
+
+(define testcards4
+  (list (make-card 'fire 1)
+        (make-card 'fire 2)
+        (make-card 'fire 3)))
+
+(define testcards5
+  (list (make-card 'wood 1)
+        (make-card 'fire 2)
+        (make-card 'water 3)))
+
+
+;; =================================
+;;
+;; Question 6A
+;;
+;; =================================
+
+
+
+;; (beats? res1 res2) Consumes 2 resources (res1 res2) 
+;;   and produces if the first resourcse beats the second
+;; Examples:
+
+(check-expect (beats? 'fire 'water) false)
+(check-expect (beats? 'wood 'water) true)
+
+;; beats?: Resource Resource -> Bool
+;; Requires: res1 is not the same as res2
+;;           and both are non empty
+(define (beats? res1 res2)
+  (cond [(symbol=? 'fire res1)  (symbol=? 'wood res2)]
+        [(symbol=? 'water res1) (symbol=? 'fire res2)]
+        [else                  (symbol=? 'water res2)]))
+
+
+;; General Tests
+(check-expect (beats? 'water 'fire) true)
+(check-expect (beats? 'water 'wood) false)
+(check-expect (beats? 'wood 'water) true)
+(check-expect (beats? 'wood 'fire)  false)
+(check-expect (beats? 'fire 'wood)  true)
+(check-expect (beats? 'fire 'water) false)
