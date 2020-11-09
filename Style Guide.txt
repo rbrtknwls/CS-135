@@ -1,0 +1,42 @@
+;; ******************************************
+;;   Robert (Robbie) Knowles (20878339)
+;;   CS 135 Fall 2020
+;;   Assigment 01, Problem 1(A,B)
+;; ******************************************
+
+ (Any, Num, Int, Nat, Bool, Str, Char, and Sym)
+
+General Comments:
+
+1) Make sure names are good (lower case with dashes)
+2) Make sure indentation is proper
+3) Define constants used
+4) Make sure functions have comments and at least 2 spaces between them
+5) Have a seperater
+
+
+Example Format:
+
+;; (sum-of-squares p1 p2) produces the sum of       ; <--- Purpose
+;;     the squares of p1 and p2
+;; Examples:                                        ; <--- Examples
+(check-expect (sum-of-squares 3 4) 25)
+(check-expect (sum-of-squares 0 2.5) 6.25)
+
+;; sum-of-squares: Num Num → Num                    ; <--- Contract
+(define (sum-of-squares p1 p2)                      ; <--- Function Header
+   (+ (* p1 p1)                                     ; <--- Function Body
+       (* p2 p2)))
+
+;; Tests:                                           ; <--- Tests at least 4)
+(check-expect (sum-of-squares 0 0) 0)
+(check-expect (sum-of-squares -2 7) 53)
+
+Explination:
+
+Purpose: Shows what each function does, dont use purpose, only should have a single purpose
+Examples: Shwos the bassic use cases of the function
+Contract: Shows which types are valid inputs, you may also need to add a requires
+Tests: Make sure they run over every possible case for (cond) and they test boundries
+
+Helper functions only need a purpose contract and an example!
