@@ -4,12 +4,12 @@
 ;; ******************************************
 ;;   Robert (Robbie) Knowles (20878339)
 ;;   CS 135 Fall 2020
-;;   Midterm 02, Problem 6(A-D)
+;;   Midterm 02, Problem 7
 ;; ******************************************
 
 
 ;; ==================================
-;; struct and data definitions For Q6
+;; struct and data definitions For Q7
 ;; =================================
 
 
@@ -21,68 +21,112 @@
 ;; An Outcome is (anyof 'player-1 'player-2 'tie-game)
 
 
-;; =================================
-;; Testing Suite 6
-;; =================================
 
 
-;; ======= General Tests ==========
-(define testcards
-  (list (make-card 'fire 10)
-        (make-card 'wood 23)
-        (make-card 'water 3)
-        (make-card 'fire 20)))
 
-(define testcards1
-  (list (make-card 'fire 10)))
-
-(define testcards2
-  (list (make-card 'fire 10)
-        (make-card 'water 23)))
-
-(define testcards3
-  (list (make-card 'fire 4)
-        (make-card 'fire 23)))
-
-(define testcards4
-  (list (make-card 'fire 1)
-        (make-card 'fire 2)
-        (make-card 'fire 3)))
-
-(define testcards5
-  (list (make-card 'wood 1)
-        (make-card 'fire 2)
-        (make-card 'water 3)))
 
 
 ;; =================================
 ;;
-;; Question 6A
+;; Question 7
 ;;
 ;; =================================
 
 
 
-;; (beats? res1 res2) Consumes 2 resources (res1 res2) 
-;;   and produces if the first resourcse beats the second
+;; (median lon) Consumes a List of Numbers (lon) 
+;;   and then produces the median of the lon
 ;; Examples:
 
-(check-expect (beats? 'fire 'water) false)
-(check-expect (beats? 'wood 'water) true)
+(check-expect (median (list 9 32.4 -2 6 28 22 129332)) 22)
+(check-expect (median (list 7 827 -23.2 -300)) -8.1)
+(check-expect (median (list 7 7 7 7 7 89)) 7)
 
-;; beats?: Resource Resource -> Bool
-;; Requires: res1 is not the same as res2
-;;           and both are non empty
-(define (beats? res1 res2)
-  (cond [(symbol=? 'fire res1)  (symbol=? 'wood res2)]
-        [(symbol=? 'water res1) (symbol=? 'fire res2)]
-        [else                  (symbol=? 'water res2)]))
+;; median: (listof Num) -> Num
+;; Requires: lon is nonempty
+(define (median lon)
+  (cond [(empty? lon)                         empty]
+        [(= (length lon) 1)             (first lon)]
+        [(= (length lon) 2)  (/ (+ (first lon)
+                                   (second lon)) 2)]
+        [else  (median (rm-maxandmin lon (getmax lon) false
+                                         (getmin lon) false))]))
+                                                   
 
+        
+;; ===  Helper Functions  ===
+
+
+;; (rm-maxandmin lon max ma min mi) Consumes a List of Numbers (lon) 
+;;   (lon), Nums (max, min) and Bools (ma, mi) and then
+;;   produces a new list of numbers where the highest and lowest
+;;   value is given, ma and mi are used to see if the max or min
+;;   is already picked
+;; Examples:
+
+(check-expect (rm-maxandmin (list 1 2 3 4 5) 1 false 5 false)
+                            (list 2 3 4))
+(check-expect (rm-maxandmin (list 7 827 -23.2 -300)
+                            827 false -300 false) (list 7 -23.2))
+(check-expect (rm-maxandmin (list 7 7 7 7 7 89)
+                            7 false 89 false) (list 7 7 7 7))
+
+;; rm-maxandmin: (listof Num) Num Bool Num Bool -> (listof Num)
+(define (rm-maxandmin lon max ma min mi)
+  (cond [(empty? lon)                        empty]
+        [(and (not ma) (= (first lon) max))
+                  (rm-maxandmin (rest lon) max true
+                                           min mi)]
+        [(and (not mi) (= (first lon) min))
+                  (rm-maxandmin (rest lon) max ma
+                                           min true)]
+        [else
+                  (cons (first lon)
+                        (rm-maxandmin (rest lon) max
+                                      ma min mi))]))
+
+;; (getmax lon) Consumes a List of Numbers (lon) and
+;;   produces the maximum value of the lon
+;; Examples:
+
+(check-expect (getmax (list 1 2 3 4 5)) 5)
+(check-expect (getmax (list 7 827 -23.2 -300)) 827)
+(check-expect (getmax (list 7 7 7 7 7 89)) 89)
+
+;; getmax: (listof Num) -> Num
+(define (getmax lon)
+  (cond [(empty? (rest lon))    (first lon)]
+        [else     (max (first lon)
+                       (getmax (rest lon)))]))
+
+
+;; (getmin lon) Consumes a List of Numbers (lon) and
+;;   produces the minimum value of the lon
+;; Examples:
+
+(check-expect (getmin (list 1 2 3 4 5)) 1)
+(check-expect (getmin (list 7 827 -23.2 -300)) -300)
+(check-expect (getmin (list 7 7 7 7 7 89)) 7)
+
+;; getmin: (listof Num) -> Num
+(define (getmin lon)
+  (cond [(empty? (rest lon))    (first lon)]
+        [else     (min (first lon)
+                       (getmin (rest lon)))]))
+
+;; Empty Tests
+(check-expect (median empty) empty)
 
 ;; General Tests
-(check-expect (beats? 'water 'fire) true)
-(check-expect (beats? 'water 'wood) false)
-(check-expect (beats? 'wood 'water) true)
-(check-expect (beats? 'wood 'fire)  false)
-(check-expect (beats? 'fire 'wood)  true)
-(check-expect (beats? 'fire 'water) false)
+(check-expect (median (list 1 2)) 1.5)
+(check-expect (median (list 1 2 3)) 2)
+(check-expect (median (list 1 2 3 4)) 2.5)
+(check-expect (median (list 1 2 3 4 5)) 3)
+(check-expect (median (list -100 -20 3 20 100)) 3)
+(check-expect (median (list 1 2 3 4 5 6 7 8 9 10)) 5.5)
+(check-expect (median (list 1 2 3 4 5 6 7 8 9 10
+                            11 12 13 14 15 16 17
+                            18 19 20)) 10.5)
+(check-expect (median (list 1 2 3  -4 5 6 7 8 9 10
+                            -11 12 -13 14 15 16 17
+                            18 19 -20)) 7.5)
