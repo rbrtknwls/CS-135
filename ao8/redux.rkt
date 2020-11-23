@@ -4,7 +4,7 @@
 ;; ******************************************
 ;;   Robert (Robbie) Knowles (20878339)
 ;;   CS 135 Fall 2020
-;;   Assigment 08, Problem 2
+;;   Assigment 08, Problem 2(A-D)
 ;; ******************************************
 
 
@@ -28,7 +28,10 @@
 ;; parity: Str -> Bool
 ;; Requires: Each charactor is either #\1 or #\0
 (define (parity bstring)
+
+  ;; Constant Definition in order to convert string into list
   (local [(define clist (string->list bstring))]
+    
     (cond [(even? (foldr (lambda (x rorr)
                             (cond [(char=? x #\1) (+ 1 rorr)]
                                   [else rorr]))
@@ -156,7 +159,7 @@
 (check-expect (all-factors 63)  (list 1 3 7 9 21))
 (check-expect (all-factors 50)  (list 1 2 5 10 25))
 (check-expect (all-factors 30)  (list 1 2 3 5 6 10 15))
-(check-expect (all-factors 18)  (list 1 2 9))
+(check-expect (all-factors 18)  (list 1 2 3 6 9))
 
 ;; Zero/One Test
 (check-expect (all-factors 0)  empty)
@@ -164,8 +167,101 @@
 
 ;; Prime Tests
 (check-expect (all-factors 2)  (list 1))
-(check-expect (all-factors 7)  (list 1))
 (check-expect (all-factors 13) (list 1))
+
+
+
+;; =================================
+;;
+;; Question 2D
+;;
+;; =================================
+
+
+;; ==========
+; Test Cases
+;; ==========
+
+(define test1 (cons 5 empty))
+(define test2 (cons 4 (cons 6 empty)))
+(define test3 (cons 1 (cons 3 (cons 5 empty))))
+
+(define test4 (cons 2 (cons 2 (cons 4 empty))))
+(define test5 empty)
+(define test6 (cons 0 (cons 0 (cons 6 empty))))
+(define test7 (cons 1 (cons 2 (cons 3 empty))))
+(define test8 (cons 3 (cons 2 (cons 1 empty))))
+
+(define test9 (cons 0 (cons 0 empty)))
+(define test10 (cons 2 (cons 2 empty)))
+(define test11 (cons -2 (cons -2 (cons -2 empty))))
+
+(define test12 (cons -1 (cons 2 (cons 3 empty))))
+(define test13 (cons -3 (cons 5 (cons 1 empty))))
+(define test14 (cons -1 (cons -5 (cons -3 empty))))
+(define test15 (cons -3 (cons 6 (cons -3 empty))))
+
+
+;; (mean-relative lon) Produces a new list
+;;   based on the list of numbers (lon) that
+;;   tells if each element is below above
+;;   or at the mean
+;; Examples:
+(check-expect (mean-relative test1) (cons 'mean empty))
+(check-expect (mean-relative test2)
+              (cons 'below-mean (cons 'above-mean empty)))
+(check-expect (mean-relative test3) (cons 'below-mean
+              (cons 'mean (cons 'above-mean empty))))
+
+;; mean-relative: (listof Num) -> (List of Sym)
+(define (mean-relative lon)
+
+ (cond [(empty? lon) empty]
+       [else 
+             ;; Constant Definiton for Mean which gives the mean
+             ;;of the set
+        
+             (local [(define mean (/ (foldr + 0 lon) (length lon)))]
+    
+              (map (lambda (x) (cond [(= x mean)       'mean]
+                                     [(> x mean) 'above-mean]
+                                     [else       'below-mean]))
+                   lon))]))
+  
+
+
+;; Basic Tests
+(check-expect (mean-relative test4) (cons 'below-mean
+                 (cons 'below-mean (cons 'above-mean empty))))
+(check-expect (mean-relative test6) (cons 'below-mean
+                 (cons 'below-mean (cons 'above-mean empty))))
+(check-expect (mean-relative test7) (cons 'below-mean
+              (cons 'mean (cons 'above-mean empty))))
+(check-expect (mean-relative test8) (cons 'above-mean
+              (cons 'mean (cons 'below-mean empty))))
+
+;;Empty List Test:
+(check-expect (mean-relative test5) empty)
+
+;;Equal Lists Tests:
+(check-expect (mean-relative test9)
+              (cons 'mean (cons 'mean empty)))
+(check-expect (mean-relative test10)
+              (cons 'mean (cons 'mean empty)))
+(check-expect (mean-relative test11) (cons 'mean
+              (cons 'mean (cons 'mean empty))))
+
+;;Negitive Element List Tests:
+(check-expect (mean-relative test12) (cons 'below-mean
+              (cons 'above-mean (cons 'above-mean empty))))
+(check-expect (mean-relative test13) (cons 'below-mean
+              (cons 'above-mean (cons 'mean empty))))
+(check-expect (mean-relative test14) (cons 'above-mean
+              (cons 'below-mean (cons 'mean empty))))
+(check-expect (mean-relative test15) (cons 'below-mean
+              (cons 'above-mean (cons 'below-mean empty))))
+
+
 
 
 
