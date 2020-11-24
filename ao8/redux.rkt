@@ -28,16 +28,12 @@
 ;; parity: Str -> Bool
 ;; Requires: Each charactor is either #\1 or #\0
 (define (parity bstring)
-
-  ;; Constant Definition in order to convert string into list
-  (local [(define clist (string->list bstring))]
-    
     (cond [(even? (foldr (lambda (x rorr)
                             (cond [(char=? x #\1) (+ 1 rorr)]
                                   [else rorr]))
                          0
-                         clist)) 'even]
-          [else 'odd])))
+                         (string->list clist))) 'even]
+          [else 'odd]))
 
 
 ;; Basic Tests
@@ -219,10 +215,12 @@
  (cond [(empty? lon) empty]
        [else
         
-             ;; Constant Definiton for Mean which gives the mean
-             ;; of the set
         
-             (local [(define mean (/ (foldr + 0 lon) (length lon)))]
+             (local [
+               ;; (mean lon) Produces the mean of a given list
+               ;;  of numbers (lon)
+               ;; mean: (listof Num -> Num)
+               (define (mean lon (/ (foldr + 0 lon) (length lon)))]
     
               (map (lambda (x) (cond [(= x mean)       'mean]
                                      [(> x mean) 'above-mean]
