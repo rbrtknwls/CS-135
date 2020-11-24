@@ -1,10 +1,10 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
-#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname redux) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname strictly-alfs) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
 ;; ******************************************
 ;;   Robert (Robbie) Knowles (20878339)
 ;;   CS 135 Fall 2020
-;;   Assigment 08, Problem 2(A-D)
+;;   Assigment 08, Problem 3(A-D)
 ;; ******************************************
 
 
@@ -25,15 +25,19 @@
 (check-expect (parity "Hello123") 'odd)
 (check-expect (parity "00110011") 'even)
 
-;; parity: Str -> Sym
+;; parity: Str -> Bool
 ;; Requires: Each charactor is either #\1 or #\0
 (define (parity bstring)
+
+  ;; Constant Definition in order to convert string into list
+  (local [(define clist (string->list bstring))]
+    
     (cond [(even? (foldr (lambda (x rorr)
                             (cond [(char=? x #\1) (+ 1 rorr)]
                                   [else rorr]))
                          0
-                         (string->list bstring))) 'even]
-          [else 'odd]))
+                         clist)) 'even]
+          [else 'odd])))
 
 
 ;; Basic Tests
@@ -209,18 +213,20 @@
 (check-expect (mean-relative test3) (cons 'below-mean
               (cons 'mean (cons 'above-mean empty))))
 
-;; mean-relative: (listof Num) -> (listof Sym)
+;; mean-relative: (listof Num) -> (List of Sym)
 (define (mean-relative lon)
 
  (cond [(empty? lon) empty]
-       [else (map (lambda (x)
-                     (cond
-                       [(= x (/ (foldr + 0 lon) (length lon)))
-                                         'mean]
-                       [(> x (/ (foldr + 0 lon) (length lon)))
-                                   'above-mean]
-                       [else       'below-mean]))
-                   lon)]))
+       [else 
+             ;; Constant Definiton for Mean which gives the mean
+             ;;of the set
+        
+             (local [(define mean (/ (foldr + 0 lon) (length lon)))]
+    
+              (map (lambda (x) (cond [(= x mean)       'mean]
+                                     [(> x mean) 'above-mean]
+                                     [else       'below-mean]))
+                   lon))]))
   
 
 

@@ -1,0 +1,14 @@
+;; The first three lines of this file were inserted by DrRacket. They record metadata
+;; about the language level of this file in a form that our tools can easily process.
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname bonus) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
+
+(define (super-foldr pred base lop)
+    (foldr (lambda (x rorr)
+             (cond [(list? x)
+                    (pred (super-foldr pred base x)
+                          rorr)]
+                   [else (pred x rorr)]))
+           base
+           lop))
+
+(super-foldr string-append "base" '("1"("1") "1"))

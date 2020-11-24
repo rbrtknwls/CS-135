@@ -143,7 +143,7 @@
 ;;  a given number (n)
 
 ;; Examples:
-(check-expect (supersize odd?
+(check-expect (supersize 2
   (list 1 (list 2 (list 2 3 4) 5 6 (list 7 8 9)) 10 11 12))
   (list (list 2 (list 2 4) 6 (list 8)) 10 12))
 
