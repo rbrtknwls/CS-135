@@ -91,4 +91,72 @@
 (check-expect (magnitudes '(1 (-5 -5 (1 -3)))) 15)
 
 ;; magnitudes: (nested-listof Num) -> Num
-(define (super-foldr pred base lop)
+(define (magnitudes nl)
+  (super-foldr (lambda (x rorr)
+                 (+ (abs x) (abs rorr)))
+               0 nl))
+    
+;; Empty Tests
+(check-expect (magnitudes '(()()()(()())()((())))) 0)
+(check-expect (magnitudes '()) 0)
+
+;; General Tests
+(check-expect (magnitudes '(1 2 3 4 5 6)) 21)
+(check-expect (magnitudes '(1 -5 -4 5 6)) 21)
+(check-expect (magnitudes '((1 2 (-3 4 (5) (-6))))) 21)
+(check-expect (magnitudes '((-1 -2 (3 -4 (5) (6))))) 21)
+(check-expect (magnitudes '((-5 (-1.23) ((-7.31)) 10) 10)) 33.54)
+(check-expect (magnitudes '((-5 (-1.23) ((-7.31)) -10) -10)) 33.54)
+(check-expect (magnitudes '((((((((((-2))))))))))) 2)
+(check-expect (magnitudes '(-1(-1(-1(-1(-2)))))) 6)
+
+
+
+;; =================================
+;;
+;; Question 5C
+;;
+;; =================================
+
+
+
+;; (super-filter pred? lst) Given a predicate (pred?), will filter
+;;  through any depth of list (lis) and get rid of data
+;;  that does not satisfy the predicate
+;; Examples:
+(check-expect (super-filter odd?
+   (list 1 (list 2 (list 2 3 4) 5 6 (list 7 8 9)) 10 11 12))
+   (list 1 (list (list 3) 5 (list 7 9)) 11))
+
+;; super-filter: (X -> Bool) (nested-listof X) -> (listof X)
+(define (super-filter pred? lst)
+    (super-foldr (lambda (x rorr)
+                     (cond [(list? x) (append (list x) rorr)]
+                           [(pred? x) (cons x rorr)]
+                           [else rorr]))
+                 empty
+                 lst))
+
+;; Empty Test
+(check-expect (super-filter even? empty) empty)
+
+;; General Tests (Numbers)
+(check-expect (super-filter even? '(1 2 3 4 5 6)) '(2 4 6))
+(check-expect (super-filter even?
+                            '((1 2) (3 4) 5 6)) '((2) (4) 6))
+(check-expect (super-filter odd?
+                            '((((1))) 2 ((3)))) '((((1))) ((3))))
+(check-expect (super-filter odd?
+                            '(1 2 (3 4 (5 6)) 1 1)) '(1 (3 (5)) 1 1))
+(check-expect (super-filter odd?
+                            '(1 ((1)) (1) 2 1)) '(1 ((1)) (1) 1))
+
+;; General Tests (Strings)
+(check-expect (super-filter string? '("aa" a b)) '("aa"))
+(check-expect (super-filter string? '((hi) "(hi)" ("hi")))
+                                    '(()"(hi)" ("hi")))
+
+;; General Tests (Symbols)
+(check-expect (super-filter symbol? '("aa" a b)) '(a b))
+(check-expect (super-filter symbol? '((hi) "(hi)" ("hi")))
+                                    '((hi)()))
