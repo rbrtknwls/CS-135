@@ -11,7 +11,7 @@
 
 ;; =================================
 ;;
-;; Question 2A
+;; Question 3A
 ;;
 ;; =================================
 
@@ -61,7 +61,7 @@
 
 ;; =================================
 ;;
-;; Question 2B
+;; Question 3B
 ;;
 ;; =================================
 
@@ -107,7 +107,7 @@
  
 ;; =================================
 ;;
-;; Question 2C
+;; Question 3C
 ;;
 ;; =================================
 
@@ -120,7 +120,6 @@
 (check-expect (unzip '((h i)(h i)))      '((h h)(i i)))
 (check-expect (unzip '((1 a)(2 b)(3 c))) '((1 2 3) (a b c)))
 (check-expect (unzip '())                '(()()))
-
 
 ;; unzip: (listof (list X X)) -> (listof X) (listof X) 
 (define (unzip listg)
@@ -153,7 +152,7 @@
 
 ;; =================================
 ;;
-;; Question 2D
+;; Question 3D
 ;;
 ;; =================================
 
@@ -166,7 +165,6 @@
 (check-expect (subsequence '(a b c d e f g) 1 4) '(b c d))
 (check-expect (subsequence '(a b c d e f g) 1 1) '())
 (check-expect (subsequence '(a b c d) 0 400) '(a b c d))
-
 
 ;; subsequence: (listof X) Num Num -> (listof X) 
 (define (subsequence listg starting ending)
