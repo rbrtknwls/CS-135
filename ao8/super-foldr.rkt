@@ -7,6 +7,10 @@
 ;;   Assigment 08, Problem 5 (A-C)
 ;; ******************************************
 
+;; A nested list of X (nested-listof X) is one of:
+;; * empty
+;; * (cons (nested-listof X) (nested-listof X))
+;; * (cons X (nested-listof X))
 
 
 ;; =================================

@@ -25,14 +25,14 @@
 (check-expect (parity "Hello123") 'odd)
 (check-expect (parity "00110011") 'even)
 
-;; parity: Str -> Bool
+;; parity: Str -> Sym
 ;; Requires: Each charactor is either #\1 or #\0
 (define (parity bstring)
     (cond [(even? (foldr (lambda (x rorr)
                             (cond [(char=? x #\1) (+ 1 rorr)]
                                   [else rorr]))
                          0
-                         (string->list clist))) 'even]
+                         (string->list bstring))) 'even]
           [else 'odd]))
 
 
@@ -209,23 +209,18 @@
 (check-expect (mean-relative test3) (cons 'below-mean
               (cons 'mean (cons 'above-mean empty))))
 
-;; mean-relative: (listof Num) -> (List of Sym)
+;; mean-relative: (listof Num) -> (listof Sym)
 (define (mean-relative lon)
 
  (cond [(empty? lon) empty]
-       [else
-        
-        
-             (local [
-               ;; (mean lon) Produces the mean of a given list
-               ;;  of numbers (lon)
-               ;; mean: (listof Num -> Num)
-               (define (mean lon (/ (foldr + 0 lon) (length lon)))]
-    
-              (map (lambda (x) (cond [(= x mean)       'mean]
-                                     [(> x mean) 'above-mean]
-                                     [else       'below-mean]))
-                   lon))]))
+       [else (map (lambda (x)
+                     (cond
+                       [(= x (/ (foldr + 0 lon) (length lon)))
+                                         'mean]
+                       [(> x (/ (foldr + 0 lon) (length lon)))
+                                   'above-mean]
+                       [else       'below-mean]))
+                   lon)]))
   
 
 

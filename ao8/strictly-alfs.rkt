@@ -121,7 +121,7 @@
 (check-expect (unzip '((1 a)(2 b)(3 c))) '((1 2 3) (a b c)))
 (check-expect (unzip '())                '(()()))
 
-;; unzip: (listof (list X X)) -> (listof X) (listof X) 
+;; unzip: (listof (list X X)) -> (list (listof X) (listof X))
 (define (unzip listg)
   (list (map (lambda (x) (first x)) listg)
         (map (lambda (x) (second x)) listg)))
