@@ -200,14 +200,14 @@
 
 (check-expect
     (function-go-round (list (lambda (x) (not x))
-                             (lambda (x) (false? x)))
+                             (lambda (x) x ))
                        '(#true #false #true #false))
-    '(#false #true #false #true))
+    '(#false #false #false #false))
 (check-expect
     (function-go-round (list (lambda (x) (not x))
-                             (lambda (x) (false? x)))
+                             (lambda (x)  x))
                        '(#true #true #false #false))
-    '(#false #false #true #true))
+    '(#false #true #true #false))
 
 ;; === String Tests ===
 
