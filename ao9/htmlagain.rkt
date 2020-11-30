@@ -28,23 +28,17 @@
 ;; =================================
 
 
-
-;; (tokenize los) Given a string will produce a list
-;; of all the elements divided by spaces
+;; (tokenize hstring) Given a string will produce a list
+;; of all the elements (opening, closing and strings)
 ;; Examples:
 (check-expect (tokenize "<p><h1>Heading</h1>Text</p>")
-'("<p>" "<h1>" "Heading" "</h1>" "Text" "</p>"))
-(check-expect (tokenize "a b c") '("a b c"))
+              '("<p>" "<h1>" "Heading" "</h1>" "Text" "</p>"))
+(check-expect (tokenize "a b   c") '("a b   c"))
 (check-expect (tokenize "") empty)
 
 ;; tokenize: Str -> (listof Str)
-(define (flip-case los)
-  (cond [(< (length los) 3)
-                           los]
-        [else
-         (append (list (first los)
-                       (second los))
-                 (mutate los))]))
+(define (tokenize hstring)
+  (clist->nlist (string->list hstring)))
 
 
 ;; =================================
@@ -52,38 +46,52 @@
 ;; =================================
 
 
-;; (mutate los) Given a list of strings (los) will check
-;;  the first 2 values and then mutate the third depending
-;;  if the first 2 values are even or odd
+;; (clist->nlist loc) Given a list of characters (los) will 
+;;   produce a list of all the elements (opening, closing and strings)
 ;; Examples:
-(check-expect
-       (mutate '("hi" "I" "Am")) '("am"))
-(check-expect
-       (mutate '("OnLiNE" "ClAsSEs" "ArE" "sOo" "mUcH" "FuN!"))
-           '("are" "SOO" "MUCH" "fun!"))
+(check-expect (clist->nlist (string->list "<p></p>"))
+              '("<p>" "</p>"))
 
-;; mutate: (listof Str) -> (listof Str)
-;; Requires: los to have a length greater then 2
-(define (mutate los)
-  (local [
+;; clist->nlist: (listof Char) -> (listof Str)
+(define (clist->nlist loc)
+     (cond  [(empty? loc) empty]
+            [else (cons (list->string (curr-list loc))
+                        (clist->nlist (rest-list loc)))]))
 
-        ;; (divs2 str1 str2) given two strings (str1,str2)
-        ;;  will produce if the sum of the characters of
-        ;;  the two strings are divisible by 2
 
-        ;; divs2: Str Str -> Bool
-        (define (divs2 str1 str2)
-          (even? (+ (string-length str1)
-                 (string-length str2))))]
+;; (curr-list loc) Produces a list of all the values in a list form
+;;   up to the first end bracket or to the end of the last
+;; Examples:
+(check-expect (curr-list (string->list "<p></p>"))
+              (string->list "<p>"))
+(check-expect (curr-list (string->list "a b c d"))
+              (string->list "a b c d"))
 
-    
-     (cond  [(< (length los) 3) empty]
-            [(divs2 (first los) (second los))
-             (cons (string-upcase (third los))
-                   (mutate (rest los)))]
-            [else
-             (cons (string-downcase (third los))
-                   (mutate (rest los)))])))
+;; curr-list: (listof Char) -> (listof Char)
+(define (curr-list loc)
+     (cond  [(empty? loc)                     empty]
+            [(char=? (first loc) #\>)  (cons (first loc)
+                                               empty)]
+            [(char=? (first loc) #\<)  (cons (first loc)
+                                               empty)]
+            [else (cons (first loc)
+                        (curr-list (rest loc)))]))
+
+
+;; (rest-list loc) Produces a list of all the values in a list form
+;;   after to the first end brackets
+;; Examples:
+(check-expect (rest-list (string->list "<p></p>"))
+              (string->list "<p>"))
+(check-expect (rest-list (string->list "a b c d"))
+              empty)
+
+;; rest-list: (listof Char) -> (listof Char)
+(define (rest-list loc)
+     (cond  [(empty? loc)                  empty]
+            [(char=? (first loc) #\>) (rest loc)]
+            [(char=? (first loc) #\<) (rest loc)]
+            [else         (rest-list (rest loc))]))
 
 
 ;; =================================
@@ -131,109 +139,4 @@
 ;;
 ;; =================================
 
-;; (function-go-round fn-list data-list) Produces a new list in which
-;;  each element of data-list is changed by the element at data-list
-;;  mod fn-list of fn-list
-;; Examples:
-(check-expect
-   (function-go-round (list string-length
-                            string-upcase
-                            (lambda (x) (string-append x "!!")))
-                       '("joy" "anger" "disgust" "sadness" "fear"))
-    '(3 "ANGER" "disgust!!" 7 "FEAR"))
-(check-expect
-    (function-go-round (list even?
-                             odd?
-                             add1
-                             (lambda (x) (> 3 x)) even?) '(8 9 2 3))
-    (list true true 3 false))
 
-;; function-go-round: (listof (Any -> Any)) (listof Any) -> (listof Any)
-;; Requires: fn-list is non empty
-(define (function-go-round fn-list data-list)
-  (local [
-
-        ;; (get-val indx fnlist) Produces the element at the corrisponding
-        ;;  index (index) of a list (fnlist)
-        ;;  the two strings are divisible by 2
-
-        ;; get-val: Nat (listof (X -> Y)) -> (X -> Y)
-        (define (divs2 indx fnlist)
-          (cond [(= indx 0)              (first fnlist)]
-                [else (divs2 (sub1 indx) (rest fnlist))]))]
-    
-    (map (lambda (x y) (x y))
-         (build-list (length data-list)
-                     (lambda (x) (divs2 (remainder x (length fn-list))
-                                        fn-list)))
-         data-list)))
-
-
-;; =================================
-;; Testing Suite
-;; =================================
-
-
-;; === Empty Tests ===
-
-(check-expect
-    (function-go-round (list even?) empty)
-    empty)
-(check-expect
-    (function-go-round (list empty?) '(()))
-    '(#true))
-(check-expect
-    (function-go-round (list empty?) '(() ()))
-    '(#true #true))
-
-;; === Integer Tests ===
-
-(check-expect
-    (function-go-round (list add1) '(1 2 3 4 5 1 2 3 4 5))
-    '(2 3 4 5 6 2 3 4 5 6))
-(check-expect
-    (function-go-round (list add1 sub1) '(1 2 3 4 5 1 2 3 4 5))
-    '(2 1 4 3 6 0 3 2 5 4))
-(check-expect
-    (function-go-round (list even? sub1 odd?) '(20 12 10 -30 -40 7 5 13 -17))
-    '(#true 11 #false #true -41 #true #false 12 #true))
-(check-expect
-    (function-go-round (list (lambda (x) (= x 1))
-                             (lambda (x) (= (remainder x 5) 0))
-                             (lambda (x) (> x 9)))
-                       '(20 12 10 -30 -40 7 5 13 -17))
-    '(#false #false #true #false #true #false #false #false #false))
-
-;; === Boolean Tests ===
-
-(check-expect
-    (function-go-round (list (lambda (x) (not x))
-                             (lambda (x) x ))
-                       '(#true #false #true #false))
-    '(#false #false #false #false))
-(check-expect
-    (function-go-round (list (lambda (x) (not x))
-                             (lambda (x)  x))
-                       '(#true #true #false #false))
-    '(#false #true #true #false))
-
-;; === String Tests ===
-
-(check-expect
-    (function-go-round (list (lambda (x) (string-append x "!!!"))
-                             (lambda (x) (string-length x))
-                             (lambda (x) (string? x)))
-                       '("A" "B" "C" "D" "E" "F"))
-    '("A!!!" 1 #true "D!!!" 1 #true))
-(check-expect
-    (function-go-round (list (lambda (x) (string-append x "!!!")))
-                       '("A" "B" "C" "D" "E" "F"))
-    '("A!!!" "B!!!" "C!!!" "D!!!" "E!!!" "F!!!"))
-(check-expect
-    (function-go-round (list (lambda (x) (string-length x)))
-                       '("A" "B" "C" "D" "E" "F"))
-    '(1 1 1 1 1 1))
-(check-expect
-    (function-go-round (list (lambda (x) (length x)))
-                       '(()))
-    '(0))
