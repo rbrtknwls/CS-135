@@ -88,4 +88,4 @@
 (check-expect (fewest-coins 8 '(1 3 4))
               '(4 4))
 (check-expect (fewest-coins 25 '(1 25))
-              '(4 4 4))
+              '(25))
