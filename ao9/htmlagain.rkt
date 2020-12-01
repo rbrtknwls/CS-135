@@ -33,6 +33,8 @@
 ;; Examples:
 (check-expect (tokenize "<p><h1>Heading</h1>Text</p>")
               '("<p>" "<h1>" "Heading" "</h1>" "Text" "</p>"))
+(check-expect (tokenize "Heading</h1>Text</p>")
+              '("Heading" "</h1>" "Text" "</p>"))
 (check-expect (tokenize "a b   c") '("a b   c"))
 (check-expect (tokenize "") empty)
 
@@ -46,7 +48,7 @@
 ;; =================================
 
 
-;; (clist->nlist loc) Given a list of characters (los) will 
+;; (clist->nlist loc) Given a list of characters (los) will
 ;;   produce a list of all the elements (opening, closing and strings)
 ;; Examples:
 (check-expect (clist->nlist (string->list "<p></p>"))
@@ -55,15 +57,16 @@
 ;; clist->nlist: (listof Char) -> (listof Str)
 (define (clist->nlist loc)
      (cond  [(empty? loc) empty]
-            [else (cons (list->string (curr-list loc))
-                        (clist->nlist (rest-list loc)))]))
+            [else (cons (list->string (cons (first loc)
+                                            (curr-list (rest loc))))
+                        (clist->nlist (rest-list (rest loc))))]))
 
 
 ;; (curr-list loc) Produces a list of all the values in a list form
 ;;   up to the first end bracket or to the end of the last
 ;; Examples:
-(check-expect (curr-list (string->list "<p></p>"))
-              (string->list "<p>"))
+(check-expect (curr-list (string->list "p></p>"))
+              (string->list "p>"))
 (check-expect (curr-list (string->list "a b c d"))
               (string->list "a b c d"))
 
@@ -72,8 +75,7 @@
      (cond  [(empty? loc)                     empty]
             [(char=? (first loc) #\>)  (cons (first loc)
                                                empty)]
-            [(char=? (first loc) #\<)  (cons (first loc)
-                                               empty)]
+            [(char=? (first loc) #\<)  empty]
             [else (cons (first loc)
                         (curr-list (rest loc)))]))
 
@@ -81,8 +83,8 @@
 ;; (rest-list loc) Produces a list of all the values in a list form
 ;;   after to the first end brackets
 ;; Examples:
-(check-expect (rest-list (string->list "<p></p>"))
-              (string->list "<p>"))
+(check-expect (rest-list (string->list "p></p>"))
+              (string->list "</p>"))
 (check-expect (rest-list (string->list "a b c d"))
               empty)
 
@@ -90,7 +92,7 @@
 (define (rest-list loc)
      (cond  [(empty? loc)                  empty]
             [(char=? (first loc) #\>) (rest loc)]
-            [(char=? (first loc) #\<) (rest loc)]
+            [(char=? (first loc) #\<) loc]
             [else         (rest-list (rest loc))]))
 
 
@@ -99,38 +101,30 @@
 ;; =================================
 
 
-;; === Length Less Than 2 ===
-
-(check-expect
-   (flip-case empty) empty)
-(check-expect
-   (flip-case '("AAA")) '("AAA"))
-(check-expect
-   (flip-case '("aaa" "bbb")) '("aaa" "bbb"))
+;; === Empty String ===
+(check-expect (tokenize "") empty)
+(check-expect (tokenize "empty") '("empty"))
+(check-expect (tokenize "<empty>") '("<empty>"))
+(check-expect (tokenize "<empty></empty>") '("<empty>" "</empty>"))
 
 ;; === General Tests ===
 
-(check-expect
-   (flip-case '("WOW what a" "niCe" "Day"))
-              '("WOW what a" "niCe" "DAY"))
-(check-expect
-   (flip-case '("WiLL" "NoT" "ChAnGe"))
-              '("WiLL" "NoT" "change"))
-(check-expect
-   (flip-case '("A" "b" "C" "dd"))
-              '("A" "b" "C" "DD"))
-(check-expect
-   (flip-case '("one" "Two" "Three" "FoUr" "Fivvee"))
-              '("one" "Two" "THREE" "FOUR" "fivvee"))
-(check-expect
-   (flip-case '("one" "Two" "oN" "T" "One" "TwO"))
-              '("one" "Two" "ON" "t" "one" "TWO"))
-(check-expect
-   (flip-case '("a" "Ab" "aBc" "aBcd" "aBcde" "abcdEf" "abcDefg"))
-              '("a" "Ab" "abc" "abcd" "abcde" "abcdef" "abcdefg"))
-(check-expect
-   (flip-case '("a" "ab" "aBc" "aBc" "aB" "a" "AAAA" "aaaa" "aa" "o" "long" "test" "case"))
-              '("a" "ab" "abc" "abc" "AB" "a" "aaaa" "aaaa" "AA" "O" "long" "test" "CASE"))
+(check-expect (tokenize "<a><b><c>hihi</c></b></a>")
+              '("<a>" "<b>" "<c>" "hihi" "</c>" "</b>" "</a>"))
+(check-expect (tokenize "<a><b>hi</b><c>hi</c></a>")
+              '("<a>" "<b>" "hi" "</b>" "<c>" "hi" "</c>" "</a>"))
+(check-expect (tokenize "<a><b><c></c><d></d></b>1234</a>")
+              '("<a>" "<b>" "<c>" "</c>" "<d>" "</d>" "</b>"
+                      "1234" "</a>"))
+(check-expect (tokenize "<1></1>")
+              '("<1>" "</1>"))
+(check-expect (tokenize "<1></1><2></2><3></3>")
+              '("<1>" "</1>" "<2>" "</2>" "<3>" "</3>"))
+              '("<1>" "</1>"))
+(check-expect (tokenize "<hi>hi</hi>")
+              '("<hi>" "hi" "</hi>"))
+(check-expect (tokenize "<hi>hi</hi>")
+              '("<hi>" "hi" "</hi>"))
 
 
 ;; =================================
