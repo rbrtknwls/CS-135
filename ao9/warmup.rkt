@@ -31,34 +31,8 @@
 
 ;; flip-case: (listof Str) -> (listof Str)
 (define (flip-case los)
-  (cond [(< (length los) 3)
-                           los]
-        [else
-         (append (list (first los)
-                       (second los))
-                 (mutate los))]))
-
-
-;; =================================
-;; Helper Functions
-;; =================================
-
-
-;; (mutate los) Given a list of strings (los) will check
-;;  the first 2 values and then mutate the third depending
-;;  if the first 2 values are even or odd
-;; Examples:
-(check-expect
-       (mutate '("hi" "I" "Am")) '("am"))
-(check-expect
-       (mutate '("OnLiNE" "ClAsSEs" "ArE" "sOo" "mUcH" "FuN!"))
-           '("are" "SOO" "MUCH" "fun!"))
-
-;; mutate: (listof Str) -> (listof Str)
-;; Requires: los to have a length greater then 2
-(define (mutate los)
   (local [
-
+          
         ;; (divs2 str1 str2) given two strings (str1,str2)
         ;;  will produce if the sum of the characters of
         ;;  the two strings are divisible by 2
@@ -66,16 +40,30 @@
         ;; divs2: Str Str -> Bool
         (define (divs2 str1 str2)
           (even? (+ (string-length str1)
-                 (string-length str2))))]
+                 (string-length str2))))
 
+        
+        ;; (mutate los) Given a list of strings (los) will check
+        ;;  the first 2 values and then mutate the third depending
+        ;;  if the first 2 values are even or odd
+
+        ;; mutate: (listof Str) -> (listof Str)
+          (define (mutate los)
+            (cond  [(< (length los) 3)      empty]
+                   [(divs2 (first los) (second los))
+                       (cons (string-upcase (third los))
+                             (mutate (rest los)))]
+                   [else
+                         (cons (string-downcase (third los))
+                             (mutate (rest los)))]))]
     
-     (cond  [(< (length los) 3) empty]
-            [(divs2 (first los) (second los))
-             (cons (string-upcase (third los))
-                   (mutate (rest los)))]
-            [else
-             (cons (string-downcase (third los))
-                   (mutate (rest los)))])))
+  (cond [(< (length los) 3)
+                           los]
+        [else
+         (append (list (first los)
+                       (second los))
+                 (mutate los))])))
+
 
 
 ;; =================================
@@ -113,13 +101,15 @@
    (flip-case '("a" "Ab" "aBc" "aBcd" "aBcde" "abcdEf" "abcDefg"))
               '("a" "Ab" "abc" "abcd" "abcde" "abcdef" "abcdefg"))
 (check-expect
-   (flip-case '("a" "ab" "aBc" "aBc" "aB" "a" "AAAA" "aaaa" "aa" "o" "long" "test" "case"))
-              '("a" "ab" "abc" "abc" "AB" "a" "aaaa" "aaaa" "AA" "O" "long" "test" "CASE"))
+   (flip-case '("a" "ab" "aBc" "aBc" "aB" "a" "AAAA" "aaaa" "aa" "o"
+                    "long" "test" "case"))
+              '("a" "ab" "abc" "abc" "AB" "a" "aaaa" "aaaa" "AA" "O"
+                    "long" "test" "CASE"))
 
 
 ;; =================================
 ;;
-;; Question 5B
+;; Question 1B
 ;;
 ;; =================================
 
@@ -140,24 +130,25 @@
                              (lambda (x) (> 3 x)) even?) '(8 9 2 3))
     (list true true 3 false))
 
-;; function-go-round: (listof (Any -> Any)) (listof Any) -> (listof Any)
+;; function-go-round: (listof (Any -> Any))
+;;                             (listof Any) -> (listof Any)
 ;; Requires: fn-list is non empty
 (define (function-go-round fn-list data-list)
   (local [
 
-        ;; (get-val indx fnlist) Produces the element at the corrisponding
-        ;;  index (index) of a list (fnlist)
-        ;;  the two strings are divisible by 2
+        ;; (get-val indx fnlist) Produces the element at the
+        ;;  corrisponding index (index) of a list (fnlist)
 
         ;; get-val: Nat (listof (X -> Y)) -> (X -> Y)
-        (define (divs2 indx fnlist)
+        (define (get-val indx fnlist)
           (cond [(= indx 0)              (first fnlist)]
-                [else (divs2 (sub1 indx) (rest fnlist))]))]
+                [else (get-val (sub1 indx) (rest fnlist))]))]
     
     (map (lambda (x y) (x y))
          (build-list (length data-list)
-                     (lambda (x) (divs2 (remainder x (length fn-list))
-                                        fn-list)))
+                     (lambda (x) (get-val
+                                   (remainder x (length fn-list))
+                                   fn-list)))
          data-list)))
 
 
@@ -187,7 +178,8 @@
     (function-go-round (list add1 sub1) '(1 2 3 4 5 1 2 3 4 5))
     '(2 1 4 3 6 0 3 2 5 4))
 (check-expect
-    (function-go-round (list even? sub1 odd?) '(20 12 10 -30 -40 7 5 13 -17))
+    (function-go-round (list even? sub1 odd?) '(20 12 10 -30 -40 7
+                                                   5 13 -17))
     '(#true 11 #false #true -41 #true #false 12 #true))
 (check-expect
     (function-go-round (list (lambda (x) (= x 1))
