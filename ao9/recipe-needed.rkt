@@ -190,7 +190,7 @@
        (m3 (lambda (x) (= x 81)) '(1 aahhaha 9 zjzxjxz)) false)
 
 ;; m3: (Num Num -> Any) (listof Any) -> Any
-;; Requires: b to be nonempty
+;; Requires: b has to contain at least one int
 (define (m3 a b)
    (local[
           
@@ -224,34 +224,35 @@
 ;; =================================
 
 
+
 ;; === Bool Tests ===
 
 (check-expect
        (m3 (lambda (x) (= x 81)) '(1 2 3 4 5 6 7 8 82)) true)
 (check-expect
-       (m3 (lambda (x) (>= x 81)) '(2 213 14 19)) true)
+       (m3 (lambda (x) (>= x 81)) '(2 a 213 14 19)) true)
 (check-expect
-       (m3 (lambda (x) (< x 81)) '(91 2 314 51 2)) false)
+       (m3 (lambda (x) (< x 81)) '(91 2 314 a 51 2)) false)
 (check-expect
-       (m3 (lambda (x) (odd? x)) '(-1 -23 4 5 -1 2202)) true)
+       (m3 (lambda (x) (odd? x)) '(-1 dsad -23 4 5 -1 2202)) true)
 (check-expect
-       (m3 (lambda (x) (even? x)) '(-2029 282 21 4)) false)
+       (m3 (lambda (x) (even? x)) '(-2029 282 21 sada 4)) false)
 
 ;; === Int Tests ===
 
 (check-expect
        (m3 (lambda (x) (sub1 x)) '(1)) -1)
 (check-expect
-       (m3 (lambda (x) (add1 x)) '(100 90 42 1 -12 -3 -100)) 201)
+       (m3 (lambda (x) (add1 x)) '(100 90 42 1 sfa-12 -3 -100)) 201)
 (check-expect
-       (m3 (lambda (x) (sub1 x)) '(9999)) -1)
+       (m3 (lambda (x) (sub1 x)) '(safsa 9999)) -1)
 
 ;; === Str Tests ===
 
 (check-expect
        (m3 (lambda (x) (string-length (number->string x)))
-           '(83 4 12 31 41 51)) 2)
+           '(83 afsafsa 4 12 31 sa 41 51)) 2)
 (check-expect
        (m3 (lambda (x) (string-append (number->string x) "!!"))
-           '(-5 1 2 3 4 5 6 7 8 10)) "15!!")
+           '(-5 1 2 3 4 5 a v s ada 6 7 8 10)) "15!!")
 
