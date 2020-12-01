@@ -84,10 +84,12 @@
 
 
 
-;; (m2 a) Takes in a list of strings (a) and produces a predicate
-;;  which will take in a string and produce if that string's
-;;  compontents exist within an index of the list of strings (a).
-;;  However if the string itself is inside the list its not counted
+;; (m2 a) Takes in a list of strings (a) and produces a predicate.
+;;  This predicate will take a string as an input and produces if
+;;  one of the elements contains all the same characters as that
+;;  string but not in the same order. Otherwise if all elements
+;;  dont work return false, if one does return true.
+
 ;; Examples:
 (check-expect
        ((m2 '("gi" "hi" "bi")) "ih") true)
@@ -189,7 +191,7 @@
 (check-expect
        (m3 (lambda (x) (= x 81)) '(1 aahhaha 9 zjzxjxz)) false)
 
-;; m3: (Num Num -> Any) (listof Any) -> Any
+;; m3: (Num -> X) (listof Any) -> X
 ;; Requires: b has to contain at least one int
 (define (m3 a b)
    (local[
