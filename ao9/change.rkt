@@ -181,8 +181,19 @@
                          (replace-multiples
                             target
                             (rest cur_denom)
-                            (list (first cur_denom))
+                            (append (list (first cur_denom))
+                                    prev_denom)
                             (build-list target (lambda (x) 1)))]
+
+                     [(= (remainder target (first cur_denom)) 0)
+                         
+                         (replace-multiples
+                            target
+                            (rest cur_denom)
+                            (list (first cur_denom))
+                            (build-list (/ target (first cur_denom))
+                                        (lambda (x)
+                                             (first cur_denom))))]
 
                      ;; Enough Of previous denomination merge into
                      ;; new denomination
