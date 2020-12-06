@@ -114,8 +114,18 @@
 
 (check-expect (infect uwp_home 101)
               (list (list 0 101)))
-(check-expect (infect uwp_home 34)
-              (list (list 0 101))))
+(check-expect (infect uwp_home 4815162342)
+              (list (list 0 4815162342)))
+
+(check-expect (infect g_washon 1)
+              (list (list 0 1) (list 1 1)))
+(check-expect (infect g_washon 2)
+              (list (list 0 2) (list 1 2)))
+
+(check-expect (infect huisclos 3411)
+              (list (list 0 3411) (list 1 3411) (list 2 3411)))
+(check-expect (infect huisclos -3411)
+              (list (list 0 -3411) (list 1 -3411) (list 2 -3411)))
 
 ;; === Large Scale Tests ===
 
