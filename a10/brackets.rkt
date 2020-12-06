@@ -601,9 +601,94 @@
                     (list 3 170) (list 4 170) (list 5 170)))
 
 (check-expect (rise 10 findiamo_h1)
-              (list (list 0 267) (list 1 266) (list 2 1066)
-                    (list 3 267) (list 4 266) (list 5 1599)
-                    (list 6 0)))
+              (list (list 0 535) (list 1 535) (list 2 535)
+                    (list 3 534) (list 4 534) (list 5 534)
+                    (list 6 534)))
 (check-expect (rise 14 findiamo_h2)
+              (list (list 0 3) (list 1 3) (list 2 3)
+                    (list 3 3) (list 4 3) (list 5 3) (list 6 3)))
+
+
+
+;; =================================
+;;
+;; Problem 6 [night]
+;;
+;; =================================
+
+
+
+;; (night town horde) Produces the change in zombies in
+;; a given town and horde given a night passing
+;; Examples:
+
+(check-expect (night waterloo (infect waterloo 1000))
+              (list (list 1 1317) (list 2 842) (list 3 1791)
+                    (list 0 525) (list 4 525) (list 5 1000)))
+(check-expect (night waterloo waterloo_h1)
+              (list (list 1 1251) (list 2 800) (list 3 1701)
+                    (list 0 499) (list 4 499) (list 5 950)))
+(check-expect (night fourOfour fourOfour_h1)
+              empty)
+
+;; night: Town Horde -> Horde
+(define (night town horde)
+  (local [(define sunk (sink horde))]
+    (cond [(empty? sunk) empty]
+          [else (rise (first sunk) (shamble town (second sunk)))])))
+  
+           
+                                           
+
+
+;; =================================
+;; Testing Suite
+;; =================================
+
+
+;; === Empty Tests ===
+(check-expect (night fourOfour fourOfour_h1)
+              empty)
+(check-expect (night fourOfour fourOfour_h2)
+              empty)
+
+;; === Small Scale Tests ===
+
+(check-expect (night uwp_home uwp_home_h1)
+              (list (list 0 845)))
+(check-expect (night uwp_home uwp_home_h2)
+              (list (list 0 3)))
+
+(check-expect (night g_washon g_washon_h1)
+              (list (list 1 738) (list 0 738)))
+(check-expect (night g_washon g_washon_h2)
+              (list (list 1 527) (list 0 527)))
+
+(check-expect (night huisclos huisclos_h1)
+              (list (list 1 160) (list 2 160) (list 0 595)))
+(check-expect (night huisclos huisclos_h2)
+              (list (list 1 498) (list 2 498) (list 0 1851)))
+
+;; === Large Scale Tests ===
+
+(check-expect (night waterloo waterloo_h1)
+              (list (list 1 1251) (list 2 800) (list 3 1701)
+                    (list 0 499) (list 4 499) (list 5 950)))
+(check-expect (night waterloo waterloo_h2)
+              (list (list 1 132) (list 2 85) (list 3 178)
+                    (list 0 53) (list 4 52) (list 5 100)))
+
+(check-expect (night repdiamo repdiamo_h1)
+              (list (list 1 50) (list 2 50) (list 3 185)
+                    (list 4 50) (list 5 50) (list 0 190)))
+(check-expect (night repdiamo repdiamo_h2)
+              (list (list 1 11) (list 2 10) (list 3 39)
+                    (list 4 11) (list 5 10) (list 0 39)))
+
+(check-expect (night findiamo findiamo_h1)
+              (list (list 1 280) (list 2 280) (list 3 1039)
+                    (list 4 280) (list 5 280) (list 6 1545)
+                    (list 0 27)))
+(check-expect (night findiamo findiamo_h2)
               (list (list 1 1) (list 2 0) (list 3 2)
                     (list 4 1) (list 5 0) (list 6 3) (list 0 0)))
