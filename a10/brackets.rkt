@@ -393,48 +393,80 @@
 
 
 ;; shamble: Town Horde -> Horde
-(define (shamble town horde)
-
-  (local [
-          
-          (define (merge-sort results)
-            (cond [(empty? results) empty]
-                  [else
-                     (local [(define singleresult
-                                         (merge (first results)
-                                                (rest results)
-                                                empty))]
-                          
-                       (append (list (first singleresult))
-                               (merge-sort (second singleresult))))]))
-             
-          (define (merge curr_town compare_town unused_town)
-            (cond [(empty? compare_town) (list curr_town unused_town)]
-                  [(= (first curr_town) (first (first compare_town)))
-                       (merge (list (first curr_town)
-                                     (+ (second curr_town)
-                                     (second (first compare_town))))
-                              (rest compare_town)
-                              unused_town)]
-                  [else
-                       (merge curr_town
-                              (rest compare_town)
-                              (append unused_town
-                                     (list (first compare_town))))]))]
-                       
-
-                         
-      (merge-sort
-         (append (foldr (lambda (x y rorr)
-                        (append (map (lambda (x y) (list x y))
-                                  (second y)
-                                  (apportion (second x)
-                                             (length (second y))))
-                        rorr))
-                    empty horde town)
-                 (map (lambda (x) (list (first x) 0)) town)))))
+(define (shamble town horde)                     
+  (merge-sort
+   (append (foldr (lambda (x y rorr)
+                    (append (map (lambda (x y) (list x y))
+                                 (second y)
+                                 (apportion (second x)
+                                            (length (second y))))
+                            rorr))
+                  empty horde town)
+           (map (lambda (x) (list (first x) 0)) town))))
            
                                             
+;; =================================
+;; Helper Functions
+;; =================================
+
+;; (merge-sort results) Given a horde with repeating elements
+;;  creates a set of the horde with each elements sum of
+;;  zombies
+;; Examples:
+
+(check-expect (merge-sort (list (list 0 1) (list 0 2)))
+              (list (list 0 3)))
+(check-expect (merge-sort (list (list 0 1) (list 1 2) (list 1 5)))
+              (list (list 0 1) (list 1 7)))
+
+
+;; merge-sort: Horde -> Horde
+(define (merge-sort results)
+  (cond [(empty? results) empty]
+        [else
+         
+         ;; (singleresult) Gets the result of a single
+         ;;  town being complied using merge-sort, this
+         ;;  is used so it only runs once
+
+         ;; singleresult: (list Horde Horde)
+         (local [(define singleresult
+                   (merge (first results)
+                          (rest results)
+                          empty))]
+                          
+           (append (list (first singleresult))
+                   (merge-sort (second singleresult))))]))
+
+
+;; (merge curr_town compare_town unused_town) Given a town (curr_town)
+;;  will take in a list of town (compare_town) and if one of the towns
+;;  is Location it will add its zombie to curr_town else it will be 
+;;  added to unused_town
+;; Examples:
+
+(check-expect (merge (list 0 1) (list (list 0 1) (list 0 2)) empty)
+              (list (list 0 4) empty))
+(check-expect (merge (list 0 1)
+                          (list (list 0 5) (list 1 2) (list 1 5))
+                          empty)
+              (list (list 0 6) (list (list 1 2) (list 1 5))))
+
+
+;; merge-sort: Horde Horde Horde -> (list Horde Horde)
+(define (merge curr_town compare_town unused_town)
+  (cond [(empty? compare_town) (list curr_town unused_town)]
+        [(= (first curr_town) (first (first compare_town)))
+         (merge (list (first curr_town)
+                      (+ (second curr_town)
+                         (second (first compare_town))))
+                (rest compare_town)
+                unused_town)]
+        [else
+         (merge curr_town
+                (rest compare_town)
+                (append unused_town
+                        (list (first compare_town))))]))
 
 
 ;; =================================
@@ -490,3 +522,88 @@
                     (list 4 1) (list 5 0) (list 6 3) (list 0 0)))
 
 
+
+;; =================================
+;;
+;; Problem 5 [rise]
+;;
+;; =================================
+
+
+
+;; (rise zombies horde) Produces a new horde where each element 
+;;  in the origonal horde is added to by some division of the
+;;  zombies
+;; Examples:
+
+(check-expect (rise 300 waterloo_h1)
+              (list (list 0 1000) (list 1 1000) (list 2 1000)
+                    (list 3 1000) (list 4 1000) (list 5 1000)))
+(check-expect (rise 300 (shamble waterloo waterloo_h1))
+              (list (list 1 1317) (list 2 842) (list 3 1791)
+                    (list 0 525) (list 4 525) (list 5 1000)))
+(check-expect (rise 20 (shamble fourOfour fourOfour_h1))
+              empty)
+
+;; rise: Nat Horde -> Horde
+(define (rise zombies horde)                     
+  (merge-sort
+   (append horde
+           (map (lambda (x y) (list (first x) y))
+                horde
+                (apportion zombies (length horde))))))
+           
+                                           
+
+
+;; =================================
+;; Testing Suite
+;; =================================
+
+
+;; === Empty Tests ===
+(check-expect (rise 300 fourOfour_h1)
+              empty)
+(check-expect (rise 0 fourOfour_h2)
+              empty)
+
+;; === Small Scale Tests ===
+
+(check-expect (rise 4 uwp_home_h1)
+              (list (list 0 849)))
+(check-expect (rise 0 uwp_home_h2)
+              (list (list 0 3)))
+
+(check-expect (rise 354 g_washon_h1)
+              (list (list 0 915) (list 1 915)))
+(check-expect (rise 3 g_washon_h2)
+              (list (list 0 529) (list 1 528)))
+
+(check-expect (rise 8 huisclos_h1)
+              (list (list 0 308) (list 1 308) (list 2 307)))
+(check-expect (rise 2 huisclos_h2)
+              (list (list 0 950) (list 1 950) (list 2 949)))
+
+;; === Large Scale Tests ===
+
+(check-expect (rise 600 waterloo_h1)
+              (list (list 0 1050) (list 1 1050) (list 2 1050)
+                    (list 3 1050) (list 4 1050) (list 5 1050)))
+(check-expect (rise 700 waterloo_h2)
+              (list (list 0 217) (list 1 217) (list 2 217)
+                    (list 3 217) (list 4 216) (list 5 216)))
+
+(check-expect (rise 800 repdiamo_h1)
+              (list (list 0 229) (list 1 229) (list 2 228)
+                    (list 3 228) (list 4 228) (list 5 228)))
+(check-expect (rise 900 repdiamo_h2)
+              (list (list 0 170) (list 1 170) (list 2 170)
+                    (list 3 170) (list 4 170) (list 5 170)))
+
+(check-expect (rise 10 findiamo_h1)
+              (list (list 0 267) (list 1 266) (list 2 1066)
+                    (list 3 267) (list 4 266) (list 5 1599)
+                    (list 6 0)))
+(check-expect (rise 14 findiamo_h2)
+              (list (list 1 1) (list 2 0) (list 3 2)
+                    (list 4 1) (list 5 0) (list 6 3) (list 0 0)))
