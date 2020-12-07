@@ -393,7 +393,13 @@
 
 
 ;; shamble: Town Horde -> Horde
-(define (shamble town horde)                     
+(define (shamble town horde)
+  (local [(define sorted_horde (quicksort horde
+                                   (lambda (x y) (< (first x)
+                                                    (first y)))))
+          (define sorted_town (quicksort town
+                                   (lambda (x y) (< (first x)
+                                                    (first y)))))]
   (merge-sort
    (append (foldr (lambda (x y rorr)
                     (append (map (lambda (x y) (list x y))
@@ -401,8 +407,8 @@
                                  (apportion (second x)
                                             (length (second y))))
                             rorr))
-                  empty horde town)
-           (map (lambda (x) (list (first x) 0)) town))))
+                  empty sorted_horde sorted_town)
+           (map (lambda (x) (list (first x) 0)) town)))))
            
                                             
 ;; =================================
@@ -633,7 +639,13 @@
 
 ;; night: Town Horde -> Horde
 (define (night town horde)
-  (local [(define sunk (sink horde))]
+   
+  (local [
+          ;; (sunk) generates the amount of zombies that sunk
+          ;; and the remaining zombies at each location
+
+          ;; sunk: (list Nat Horde)
+          (define sunk (sink horde))]
     (cond [(empty? sunk) empty]
           [else (rise (first sunk) (shamble town (second sunk)))])))
   
@@ -680,7 +692,7 @@
 
 (check-expect (night repdiamo repdiamo_h1)
               (list (list 1 50) (list 2 50) (list 3 185)
-                    (list 4 50) (list 5 50) (list 0 190)))
+                    (list 4 50) (list 5 50) (list 0 185)))
 (check-expect (night repdiamo repdiamo_h2)
               (list (list 1 11) (list 2 10) (list 3 39)
                     (list 4 11) (list 5 10) (list 0 39)))
@@ -692,3 +704,66 @@
 (check-expect (night findiamo findiamo_h2)
               (list (list 1 1) (list 2 0) (list 3 2)
                     (list 4 1) (list 5 0) (list 6 3) (list 0 0)))
+
+
+;; =================================
+;;
+;; Problem 7 [apocalypse]
+;;
+;; =================================
+
+
+
+;; (apocalypse town infection nights) Produces the horde
+;;   after a number of nights (nights) has passed in a town
+;;   given a starting infection
+;; Examples:
+
+(check-expect (apocalypse waterloo 1000 3)
+              (list (list 1 1894) (list 2 1104) (list 3 1625)
+                    (list 0 450) (list 4 450) (list 5 477)))
+(check-expect (apocalypse waterloo 1000 7)
+              (list (list 1 1748) (list 2 1016) (list 3 1576)
+                    (list 0 543) (list 4 543) (list 5 574)))
+(check-expect (apocalypse fourOfour 1 12)
+              empty)
+
+;; apocalypse: Town Nat Nat -> Horde
+(define (apocalypse town infection nights)
+    (cond [(empty? town) empty]
+          [else
+           (local [(define (sim-night horde nights)
+                     (cond [(zero? nights)          horde]
+                           [else (sim-night (night town horde)
+                                            (sub1 nights))]))]
+
+             (sim-night (infect town infection) nights))]))
+  
+           
+                                           
+
+
+;; =================================
+;; Testing Suite
+;; =================================
+
+
+;; === Empty Tests ===
+(check-expect (apocalypse fourOfour 10 0)
+              empty)
+(check-expect (apocalypse fourOfour 1110 1)
+              empty)
+
+;; === General Tests ===
+
+(check-expect (apocalypse waterloo 1000 14)
+              (list (list 1 1727) (list 2 1040) (list 3 1577)
+                    (list 0 545) (list 4 545) (list 5 574)))
+
+(check-expect (apocalypse waterloo 1000 28)
+              (list (list 1 1723) (list 2 1042) (list 3 1578)
+                    (list 0 545) (list 4 545) (list 5 567)))
+
+(check-expect (apocalypse waterloo 1000 31)
+              (list (list 1 1723) (list 2 1042) (list 3 1579)
+                    (list 0 545) (list 4 544) (list 5 567)))
