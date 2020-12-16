@@ -4,7 +4,7 @@
 ;; ******************************************
 ;;   Robert (Robbie) Knowles (20878339)
 ;;   CS 135 Fall 2020
-;;   Final Exams, Problem 3(a-c)
+;;   Final Exam, Problem 3(a-c)
 ;; ******************************************
 
 

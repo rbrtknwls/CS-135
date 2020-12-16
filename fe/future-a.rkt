@@ -4,7 +4,7 @@
 ;; ******************************************
 ;;   Robert (Robbie) Knowles (20878339)
 ;;   CS 135 Fall 2020
-;;   Final Exams, Problem 2a
+;;   Final Exam, Problem 2a
 ;; ******************************************
 
 ;; =================================
@@ -45,6 +45,7 @@
 (check-expect (hamming-distance test2 test2b) 3)
 
 ; hamming-distance: (listof Sym) (listof Sym) -> Nat
+;; Requires both lists are of equal size
 (define (hamming-distance list1 list2)
   (foldl (lambda (l1 l2 rorr) (cond [(symbol=? l1 l2)       rorr]
                                     [else            (add1 rorr)]))
