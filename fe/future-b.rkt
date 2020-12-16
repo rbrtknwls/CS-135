@@ -107,19 +107,31 @@
               '((#\e #\a) (#\i #\e) (#\o #\i)
                 (#\u #\o) (#\y #\u) (#\a #\y)))
 
+(check-expect (reverse-cipher '((#\a #\b) (#\c #\b))) false)
+
 ;; reverse-cipher: SCipher -> (anyof SCipher bool)
-(define (substitute mess ciph)
-  (cond [(empty? mess) empty]
-        [else
-         (list->string
-          (map (lambda (m_elem)
-                 (foldr (lambda (c_elem rorr)
-                          (cond [(char=? (first c_elem) m_elem)
-                                         (second c_elem)]
-                                [else               rorr]))
-                        m_elem
-                        ciph))
-               (string->list mess)))]))
+(define (reverse-cipher ciph)
+  
+  (local [
+          ;; (reverse) Produces the inverse of a SCipher, works if
+          ;;  the SCipher is empty too!
+
+          ;; reverse: SCipher
+          (define reverse (map (lambda (c_elem) (list (second c_elem)
+                                                     (first c_elem)))
+                          ciph))]
+    
+         (foldr (lambda (element rorr)
+                (cond [(< 1 (foldr (lambda (compare rorr)
+                               (cond [(char=? (first compare)
+                                              (first element))
+                                                    (add1 rorr)]
+                                            [else         rorr]))
+                                    0 reverse))
+                                                         false]
+                      [else                               rorr]))
+               reverse reverse)))
+         
                                             
 
 
@@ -128,36 +140,38 @@
 ;; =================================
 
 ;; === Empty Tests ===
-(check-expect (substitute empty '((#\a #\e) (#\e #\i))) empty)
-(check-expect (substitute empty '((#\n #\o))) empty)
+(check-expect (reverse-cipher empty) empty)
 
-;; === Empty Cipher Tests ===
-(check-expect (substitute "Hi is the cypher working?" empty)
-                          "Hi is the cypher working?")
-(check-expect (substitute "I" empty)
-                          "I")
-(check-expect (substitute "Am robbie its (list nice) to 12313131 -1"
-                               empty)
-                          "Am robbie its (list nice) to 12313131 -1")
+;; === Cant Cipher Tests ===
+(check-expect (reverse-cipher '((#\a #\a) (#\c #\a))) false)
+(check-expect (reverse-cipher '((#\: #\a) (#\: #\a))) false)
+(check-expect (reverse-cipher '((#\b #\a) (#\c #\a)
+                                (#\d #\a) (#\e #\a))) false)
+(check-expect (reverse-cipher '((#\b #\b) (#\c #\c)
+                                (#\d #\d) (#\e #\b))) false)
+(check-expect (reverse-cipher '((#\1 #\1) (#\2 #\1)
+                                (#\3 #\4) (#\3 #\7))) false)
 
-;; === General Tests ===
-(check-expect (substitute "1 + 3 = 6" '((#\1 #\2) (#\+ #\*)))
-                          "2 * 3 = 6")
-(check-expect (substitute "This is a speeling mistake"
-                          '((#\h #\n) (#\e #\l)))
-                          "Tnis is a spllling mistakl")
-(check-expect (substitute "This is a speeling mistake"
-                          '((#\h #\l) (#\e #\l) (#\a #\l)))
-                          "Tlis is l spllling mistlkl")
-(check-expect (substitute "happy" '((#\h #\s) (#\p #\d) (#\y #\d)))
-                          "saddd")
-(check-expect (substitute "Hi!!! :)" '((#\i #\1) (#\) #\()))
-                          "H1!!! :(")
-(check-expect (substitute ":)" '((#\: #\;) (#\) #\())) ";(")
-(check-expect (substitute "aaaabbbbccccc" '((#\a #\b) (#\c #\b)))
-                          "bbbbbbbbbbbbb")
-(check-expect (substitute "I" '((#\I #\i)))
-                          "i")
-(check-expect (substitute "damn" '((#\n #\!) (#\a #\!) (#\m #\!)))
-                          "d!!!")
+;; === Can Cipher Tests ===
+(check-expect (reverse-cipher '((#\1 #\2) (#\1 #\1)))
+                              '((#\2 #\1) (#\1 #\1)))
+(check-expect (reverse-cipher '((#\1 #\2) (#\1 #\3)))
+                              '((#\2 #\1) (#\3 #\1)))
+(check-expect (reverse-cipher '((#\a #\a) (#\a #\b) (#\a #\c)))
+                              '((#\a #\a) (#\b #\a) (#\c #\a)))
+(check-expect (reverse-cipher '((#\1 #\1) (#\1 #\2) (#\1 #\3)))
+                              '((#\1 #\1) (#\2 #\1) (#\3 #\1)))
+(check-expect (reverse-cipher '((#\1 #\1) (#\1 #\2)
+                                (#\2 #\3) (#\2 #\4)))
+                              '((#\1 #\1) (#\2 #\1)
+                                (#\3 #\2) (#\4 #\2)))
+(check-expect (reverse-cipher '((#\a #\2) (#\2 #\c)
+                                (#\e #\f) (#\g #\h)))
+                              '((#\2 #\a) (#\c #\2)
+                                (#\f #\e) (#\h #\g)))
+(check-expect (reverse-cipher '((#\2 #\2) (#\3 #\3)
+                                (#\4 #\4) (#\5 #\5)))
+                              '((#\2 #\2) (#\3 #\3)
+                                (#\4 #\4) (#\5 #\5)))
+
 
