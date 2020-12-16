@@ -7,21 +7,48 @@
 ;;   Final Exams, Problem 2a
 ;; ******************************************
 
+;; =================================
+;; [Testing Defs]
+;; =================================
+
+(define packet1 '(a b c d e f g h))
+(define packet2 '(a b a b e f e f))
+(define packet3 '(a b c d a b c d))
+
+(define packet4 '(hello I am me))
+(define packet5 '(Hello I Am Me))
+(define packet6 '(hello I am Me))
+
+(define packet7 '(hey!))
+(define packet8 '(hey.))
+
+(define packet9 '(abcd))
+(define packet10 '(dbca))
+
+;; =================================
+;;
+;; Problem 2a [hamming-distance]
+;;
+;; =================================
 
 ;; (hamming-distance list1 list2) Produces at how many places
 ;;  two lists (list1, list2) of equal lengths have different
 ;;  elements. Note that this is done without recursion.
 ;; Examples:
 
-(
+(define test1 '(t a g a a g t t t))
+(define test1b '(t a g a a g g t t))
+(check-expect (hamming-distance test1 test1b) 1)
 
-;; infect: Town Nat -> Horde
-(define (infect town zombies)
-  (cond [(empty? town) empty]
-        [else 
-          (append (list (list (first (first town))
-                              zombies))
-                  (infect (rest town) zombies))]))
+(define test2 '(b a b a b a a a b a a a))
+(define test2b '(b a b a b b a a b a b b))
+(check-expect (hamming-distance test2 test2b) 3)
+
+; hamming-distance: (listof Sym) (listof Sym) -> Nat
+(define (hamming-distance list1 list2)
+  (foldl (lambda (l1 l2 rorr) (cond [(symbol=? l1 l2)       rorr]
+                                    [else            (add1 rorr)]))
+         0 list1 list2))
                                             
 
 
@@ -29,51 +56,27 @@
 ;; Testing Suite
 ;; =================================
 
-
 ;; === Empty Tests ===
-(check-expect (infect fourOfour 0)
-              empty)
-(check-expect (infect fourOfour 10)
-              empty)
+(check-expect (hamming-distance empty empty) 0)
 
-;; === Small Scale Tests ===
+;; === No Change Tests ===
+(check-expect (hamming-distance packet1 packet1) 0)
+(check-expect (hamming-distance packet5 packet5) 0)
+(check-expect (hamming-distance packet8 packet8) 0)
+(check-expect (hamming-distance packet9 packet9) 0)
 
-(check-expect (infect uwp_home 101)
-              (list (list 0 101)))
-(check-expect (infect uwp_home 4815162342)
-              (list (list 0 4815162342)))
+;; === General Tests ===
+(check-expect (hamming-distance packet1 packet2) 4)
+(check-expect (hamming-distance packet2 packet3) 6)
+(check-expect (hamming-distance packet1 packet3) 4)
 
-(check-expect (infect g_washon 1)
-              (list (list 0 1) (list 1 1)))
-(check-expect (infect g_washon 2)
-              (list (list 0 2) (list 1 2)))
+(check-expect (hamming-distance packet4 packet5) 3)
+(check-expect (hamming-distance packet5 packet6) 2)
+(check-expect (hamming-distance packet4 packet6) 1)
 
-(check-expect (infect huisclos 3411)
-              (list (list 0 3411) (list 1 3411) (list 2 3411)))
-(check-expect (infect huisclos 3412)
-              (list (list 0 3412) (list 1 3412) (list 2 3412)))
+(check-expect (hamming-distance packet7 packet8) 1)
 
-;; === Large Scale Tests ===
+(check-expect (hamming-distance packet10 packet9) 1)
 
-(check-expect (infect waterloo 9999)
-              (list (list 0 9999) (list 1 9999) (list 2 9999)
-                    (list 3 9999) (list 4 9999) (list 5 9999)))
-(check-expect (infect waterloo 10)
-              (list (list 0 10) (list 1 10) (list 2 10)
-                    (list 3 10) (list 4 10) (list 5 10)))
-
-(check-expect (infect repdiamo 09)
-              (list (list 0 09) (list 1 09) (list 2 09)
-                    (list 3 09) (list 4 09) (list 5 09)))
-(check-expect (infect repdiamo 9721)
-              (list (list 0 9721) (list 1 9721) (list 2 9721)
-                    (list 3 9721) (list 4 9721) (list 5 9721)))
-
-(check-expect (infect findiamo 7)
-              (list (list 0 7) (list 1 7) (list 2 7) (list 3 7)
-                    (list 4 7) (list 5 7) (list 6 7)))
-(check-expect (infect findiamo 1)
-              (list (list 0 1) (list 1 1) (list 2 1) (list 3 1)
-                    (list 4 1) (list 5 1) (list 6 1)))
 
 
