@@ -70,7 +70,7 @@
 ;;
 ;;                          empty
 ;;
-;; This is a problem as empty is not a Num  and thus fun will violate
+;; This is a problem as empty is not a Num and thus fun will violate
 ;;  the contract.
 
                                              

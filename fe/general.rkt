@@ -48,9 +48,9 @@
                              '((1 "Un") (3 "Trois") (2 "Two")))
 
 ;; alist-combine:
-;;           (listof (alist X Any))
-;;           (listof (alist X Any))) -> (listof (alist X Any))
-;;                   (X Any -> Any) 
+;;           (listof (alist A Any))
+;;           (listof (alist A Any))) -> (listof (alist X Any))
+;;                   (Any Any -> Any) 
 (define (alist-combine alist1 alist2 combine)
   (cond [(and (empty? alist1) (empty? alist2)) empty]
         [(empty? alist1)
