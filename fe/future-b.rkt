@@ -120,17 +120,21 @@
           (define reverse (map (lambda (c_elem) (list (second c_elem)
                                                      (first c_elem)))
                           ciph))]
-    
-         (foldr (lambda (element rorr)
-                (cond [(< 1 (foldr (lambda (compare rorr)
-                               (cond [(char=? (first compare)
-                                              (first element))
-                                                    (add1 rorr)]
-                                            [else         rorr]))
-                                    0 reverse))
-                                                         false]
-                      [else                               rorr]))
-               reverse reverse)))
+
+         (foldr (lambda (x y rorr)
+                  (cond [(char=? (first x) (first y))  rorr]
+                        [else                         false]))
+                reverse
+                (quicksort ciph (lambda (x y)
+                           (string<? (list->string
+                                       (list (first x)))
+                                     (list->string
+                                       (list (first y))))))
+                (quicksort reverse (lambda (x y)
+                           (string<? (list->string
+                                       (list (first x)))
+                                     (list->string
+                                       (list (first y)))))))))
          
                                             
 
@@ -151,6 +155,7 @@
                                 (#\d #\d) (#\e #\b))) false)
 (check-expect (reverse-cipher '((#\1 #\1) (#\2 #\1)
                                 (#\3 #\4) (#\3 #\7))) false)
+(check-expect (reverse-cipher '((#\a #\b) (#\b #\c))) false)
 
 ;; === Can Cipher Tests ===
 (check-expect (reverse-cipher '((#\1 #\2) (#\1 #\1)))
