@@ -120,17 +120,21 @@
           (define reverse (map (lambda (c_elem) (list (second c_elem)
                                                      (first c_elem)))
                           ciph))]
-    
-         (foldr (lambda (element rorr)
-                (cond [(< 1 (foldr (lambda (compare rorr)
-                               (cond [(char=? (first compare)
-                                              (first element))
-                                                    (add1 rorr)]
-                                            [else         rorr]))
-                                    0 reverse))
-                                                         false]
-                      [else                               rorr]))
-               reverse reverse)))
+
+         (foldr (lambda (x y rorr)
+                  (cond [(char=? (first x) (first y))  rorr]
+                        [else                         false]))
+                reverse
+                (quicksort ciph (lambda (x y)
+                           (string<? (list->string
+                                       (list (first x)))
+                                     (list->string
+                                       (list (first y))))))
+                (quicksort reverse (lambda (x y)
+                           (string<? (list->string
+                                       (list (first x)))
+                                     (list->string
+                                       (list (first y)))))))))
          
                                             
 
@@ -151,24 +155,19 @@
                                 (#\d #\d) (#\e #\b))) false)
 (check-expect (reverse-cipher '((#\1 #\1) (#\2 #\1)
                                 (#\3 #\4) (#\3 #\7))) false)
+(check-expect (reverse-cipher '((#\a #\b) (#\b #\c))) false)
+(check-expect (reverse-cipher '((#\a #\b))) false)
+
 
 ;; === Can Cipher Tests ===
-(check-expect (reverse-cipher '((#\1 #\2) (#\1 #\1)))
-                              '((#\2 #\1) (#\1 #\1)))
-(check-expect (reverse-cipher '((#\1 #\2) (#\1 #\3)))
-                              '((#\2 #\1) (#\3 #\1)))
-(check-expect (reverse-cipher '((#\a #\a) (#\a #\b) (#\a #\c)))
-                              '((#\a #\a) (#\b #\a) (#\c #\a)))
-(check-expect (reverse-cipher '((#\1 #\1) (#\1 #\2) (#\1 #\3)))
-                              '((#\1 #\1) (#\2 #\1) (#\3 #\1)))
-(check-expect (reverse-cipher '((#\1 #\1) (#\1 #\2)
-                                (#\2 #\3) (#\2 #\4)))
-                              '((#\1 #\1) (#\2 #\1)
-                                (#\3 #\2) (#\4 #\2)))
-(check-expect (reverse-cipher '((#\a #\2) (#\2 #\c)
-                                (#\e #\f) (#\g #\h)))
-                              '((#\2 #\a) (#\c #\2)
-                                (#\f #\e) (#\h #\g)))
+(check-expect (reverse-cipher '((#\1 #\2) (#\2 #\3) (#\3 #\1)))
+                              '((#\2 #\1) (#\3 #\2) (#\1 #\3)))
+(check-expect (reverse-cipher '((#\1 #\3) (#\3 #\1)))
+                              '((#\3 #\1) (#\1 #\3)))
+(check-expect (reverse-cipher '((#\a #\c) (#\c #\e) (#\e #\a)))
+                              '((#\c #\a) (#\e #\c) (#\a #\e)))
+(check-expect (reverse-cipher '((#\1 #\a) (#\a #\2) (#\2 #\1)))
+                              '((#\a #\1) (#\2 #\a) (#\1 #\2)))
 (check-expect (reverse-cipher '((#\2 #\2) (#\3 #\3)
                                 (#\4 #\4) (#\5 #\5)))
                               '((#\2 #\2) (#\3 #\3)

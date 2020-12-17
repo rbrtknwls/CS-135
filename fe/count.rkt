@@ -46,7 +46,11 @@
         [else
          (local [
 
-                 
+           ;; (getlocamount los) Given a nested list (los) will
+           ;;   produce 1 if the values at the very top of the list
+           ;;   have the same first character, and 0 if not.
+
+           ;; getlocamount: Nat
            (define (getlocamount los)
             (cond [(> 1
                      (foldr (lambda (x rorr)
@@ -77,7 +81,7 @@
 
 ;; === Empty Tests ===
 (check-expect (count-starting-with #\a empty) 0)
-(check-expect (count-starting-with #\a '(b)) 0)
+(check-expect (count-starting-with #\a '("b")) 0)
 (check-expect (count-starting-with #\a '("b" "c" "d")) 0)
 (check-expect (count-starting-with #\a '(("b" "c") "d")) 0)
 (check-expect (count-starting-with #\a '(("b" "c") "d" "e")) 0)
